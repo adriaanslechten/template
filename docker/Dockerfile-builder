@@ -1,14 +1,11 @@
 # Build the builder docker image
-FROM PYTHON IMAGE (TOADD)
+FROM python:3.8-slim
 
 WORKDIR /opt/main
 COPY Pipfile* ./
-
-RUN apt-get -qq update \
-    && apt-get -qq install -y wget unzip make git gcc libtool autoconf >/dev/null \
-    && pip install --no-cache-dir pipenv awscli \
-    && pipenv install --system --deploy --dev \
-    && apt-get -qq -y purge gcc libtool autoconf \
-    && apt-get -qq -y autoclean \
-    && apt-get -qq -y autoremove \
-    && rm -rf /var/lib/apt
+RUN apt-get update \
+    && apt-get install --no-install-recommends -yq make gcc libpq-dev libffi-dev libtool \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*

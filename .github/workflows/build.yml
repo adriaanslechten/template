@@ -6,7 +6,7 @@ on:
 env:
   DOCKER_REGISTRY: gcr.io/${{secrets.GCLOUD_PROJECT_ID}}/template
   DOCKER_TAG: ${{ github.sha }}
-  DOCKERFILE: ./docker/app.Dockerfile
+  DOCKERFILE: ./docker/Dockerfile-builder
 
 jobs:
   build-and-push:
