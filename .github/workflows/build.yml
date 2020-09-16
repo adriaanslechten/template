@@ -1,0 +1,40 @@
+name: Build-Test-Push-GCP
+on:
+  push:
+    branches:
+      - master
+env:
+  DOCKER_REGISTRY: gcr.io/${{secrets.GCLOUD_PROJECT_ID}}/template
+  DOCKER_TAG: ${{ github.sha }}
+  DOCKERFILE: ./docker/app.Dockerfile
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: GCP sdk init
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: "290.0.1"
+          project_id: ${{secrets.GCLOUD_PROJECT_ID}}
+          service_account_key: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+          export_default_credentials: true
+
+      - name: GCP docker creds
+        run: |
+          gcloud auth configure-docker
+      - name: Build
+        run: |
+          docker pull DOCKER_REGISTRY:$DOCKER_TAG|| true
+          docker build . -f $DOCKERFILE -t $DOCKER_REGISTRY:DOCKER_TAG -t $DOCKER_REGISTRY:latest
+      - name: Test
+        run: |
+          docker run $DOCKER_REGISTRY:DOCKER_TAG /bin/bash -c "make test"
+      - name: Push
+        run: |
+          docker push $DOCKER_REGISTRY
