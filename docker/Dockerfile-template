@@ -1,0 +1,7 @@
+# Builds the docker image
+ARG BUILDER_VERSION
+FROM main:${BUILDER_VERSION} as BUILDER
+
+WORKDIR /opt/main/
+COPY . ./
+RUN pip install -e .

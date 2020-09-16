@@ -1,0 +1,5 @@
+.venv
+.idea
+var
+**/*.pyc
+.hypothesis

@@ -1,0 +1,14 @@
+# Build the builder docker image
+FROM PYTHON IMAGE (TOADD)
+
+WORKDIR /opt/main
+COPY Pipfile* ./
+
+RUN apt-get -qq update \
+    && apt-get -qq install -y wget unzip make git gcc libtool autoconf >/dev/null \
+    && pip install --no-cache-dir pipenv awscli \
+    && pipenv install --system --deploy --dev \
+    && apt-get -qq -y purge gcc libtool autoconf \
+    && apt-get -qq -y autoclean \
+    && apt-get -qq -y autoremove \
+    && rm -rf /var/lib/apt
